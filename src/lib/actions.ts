@@ -24,7 +24,7 @@ const rooms: Room[] = [
   { id: 'esir42-amphi-l', name: 'Amphi L', buildingId: 'esir-42' },
   { id: 'esir42-amphi-m', name: 'Amphi M', buildingId: 'esir-42' },
   { id: 'esir42-amphi-n', name: 'Amphi N', buildingId: 'esir-42' },
-  { id: 'esir42-salle-haut', name: 'Salle du haut', buildingId: 'esir-42' },
+  { id: 'esir42-salle-haut', name: '101', buildingId: 'esir-42' },
 ];
 
 
