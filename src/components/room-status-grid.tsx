@@ -9,8 +9,8 @@ export function RoomStatusGrid({ rooms }: RoomStatusGridProps) {
     if (rooms.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center text-center p-10 border-2 border-dashed rounded-lg bg-card mt-8 h-64">
-                <p className="text-lg font-medium text-muted-foreground">No rooms found for this building.</p>
-                <p className="text-sm text-muted-foreground">This may be an error, or the building has no reservable rooms.</p>
+                <p className="text-lg font-medium text-muted-foreground">Aucune salle trouvée pour ce bâtiment.</p>
+                <p className="text-sm text-muted-foreground">Il se peut qu'il n'y ait aucune salle réservable ou qu'une erreur soit survenue.</p>
             </div>
         )
     }

@@ -4,8 +4,6 @@ import ICAL from 'ical.js';
 import type { Building, Room, RoomStatusInfo, RoomWithStatus } from './types';
 import { CALENDAR_URLS } from './config';
 
-// --- MOCK DATABASE ---
-
 const buildings: Building[] = [
   { id: 'esir-41', name: 'ESIR - 41' },
   { id: 'esir-42', name: 'ESIR - 42' },
@@ -60,7 +58,6 @@ async function getRoomStatusFromICal(iCalUrl: string, roomName: string): Promise
     const relevantEvents = vevents.filter(vevent => {
       const event = new ICAL.Event(vevent);
       const location = event.location || '';
-      // Check if the room name is in the event's location field
       return location.includes(roomName);
     });
 
@@ -96,7 +93,6 @@ async function getRoomStatusFromICal(iCalUrl: string, roomName: string): Promise
 
   } catch (error) {
     console.error(`Error processing calendar for URL ${iCalUrl}:`, error);
-    // Return a default "free" status in case of an error
     return {
       status: 'free',
       nextChangeTime: null,
@@ -105,16 +101,14 @@ async function getRoomStatusFromICal(iCalUrl: string, roomName: string): Promise
   }
 }
 
-// This is the main function to get room status.
 async function getRoomStatus(room: Room): Promise<RoomStatusInfo> {
   const iCalUrl = CALENDAR_URLS[room.buildingId];
   
   if (!iCalUrl) {
-    console.warn(`No calendar URL for building ${room.buildingId}. Using mock status.`);
+    console.warn(`No calendar URL for building ${room.buildingId}.`);
     return { status: 'free', nextChangeTime: null, currentEventName: null };
   }
   
-  // Since we have one URL for the whole building, we need to filter by room name
   return getRoomStatusFromICal(iCalUrl, room.name);
 }
 
@@ -122,7 +116,6 @@ export async function getRoomsWithStatus(buildingId: string): Promise<RoomWithSt
     const buildingRooms = await getRoomsByBuilding(buildingId);
     if (buildingRooms.length === 0) return [];
     
-    // Using a longer delay to account for network requests
     await new Promise(resolve => setTimeout(resolve, 800));
     
     const roomsWithStatus = await Promise.all(

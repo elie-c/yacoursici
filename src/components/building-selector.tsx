@@ -31,7 +31,7 @@ export function BuildingSelector({ buildings, selectedBuildingId }: BuildingSele
   return (
     <Select value={selectedBuildingId} onValueChange={handleValueChange}>
       <SelectTrigger className="w-full sm:w-[300px] text-base bg-card">
-        <SelectValue placeholder="Select a building" />
+        <SelectValue placeholder="Sélectionnez un bâtiment" />
       </SelectTrigger>
       <SelectContent>
         {buildings.map((building) => (

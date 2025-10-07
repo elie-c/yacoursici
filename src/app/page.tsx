@@ -27,11 +27,10 @@ function GridSkeleton() {
 
 async function RoomData({ buildingId, buildings }: { buildingId: string, buildings: Building[] }) {
   if (!buildingId) {
-    const buildingName = buildings[0]?.name || 'a building';
+    const buildingName = buildings[0]?.name || 'un bâtiment';
     return (
         <div className="text-center py-10">
-            <p className="text-muted-foreground">Please select a building to view room statuses.</p>
-            <p className="text-muted-foreground text-sm">Starting with '{buildingName}'.</p>
+            <p className="text-muted-foreground">Veuillez sélectionner un bâtiment pour voir l'état des salles.</p>
         </div>
     );
   }
@@ -55,7 +54,7 @@ export default async function Home({
     <main className="container mx-auto px-4 py-8">
       <header className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
         <h1 className="text-4xl font-bold font-headline text-center sm:text-left">
-          Room Status
+          Disponibilité des salles
         </h1>
         {buildings.length > 0 && (
           <BuildingSelector

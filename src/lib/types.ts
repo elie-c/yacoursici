@@ -9,12 +9,6 @@ export type Room = {
   buildingId: string;
 };
 
-export type CalendarEvent = {
-  summary: string;
-  start: string; // ISO 8601 format
-  end: string;   // ISO 8601 format
-};
-
 export type RoomStatusInfo = {
     status: 'free' | 'occupied';
     nextChangeTime: Date | null;
