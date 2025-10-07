@@ -3,10 +3,10 @@
 
 export const CALENDAR_URLS = {
   // Bâtiment ESIR 42
-  'esir42-amphi-l': 'https://planning.univ-rennes1.fr/jsp/custom/modules/plannings/9WO5rzYP.shu', // Exemple, à remplacer
-  'esir42-amphi-m': 'https://planning.univ-rennes1.fr/jsp/custom/modules/plannings/9WO5rzYP.shu', // Exemple, à remplacer
-  'esir42-amphi-n': 'https://planning.univ-rennes1.fr/jsp/custom/modules/plannings/9WO5rzYP.shu', // Exemple, à remplacer
-  'esir42-salle-haut': 'https://planning.univ-rennes1.fr/jsp/custom/modules/plannings/9WO5rzYP.shu', // Exemple, à remplacer
+  'esir42-amphi-l': 'https://planning.univ-rennes1.fr/jsp/custom/modules/plannings/9WO5rzYP.shu',
+  'esir42-amphi-m': 'https://planning.univ-rennes1.fr/jsp/custom/modules/plannings/9WO5rzYP.shu',
+  'esir42-amphi-n': 'https://planning.univ-rennes1.fr/jsp/custom/modules/plannings/9WO5rzYP.shu',
+  'esir42-salle-haut': 'https://planning.univ-rennes1.fr/jsp/custom/modules/plannings/9WO5rzYP.shu',
   
   // Bâtiment ESIR 41 (à compléter)
   'esir41-001': 'cal-esir41-001',
