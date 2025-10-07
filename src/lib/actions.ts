@@ -12,20 +12,20 @@ const buildings: Building[] = [
 
 const rooms: Room[] = [
   // ESIR 41
-  { id: 'esir41-amphi-l', name: 'Amphi L', buildingId: 'esir-41', iCalUrl: 'cal-esir41-amphi-l' },
-  { id: 'esir41-amphi-m', name: 'Amphi M', buildingId: 'esir-41', iCalUrl: 'cal-esir41-amphi-m' },
-  { id: 'esir41-amphi-n', name: 'Amphi N', buildingId: 'esir-41', iCalUrl: 'cal-esir41-amphi-n' },
-  { id: 'esir41-salle-haut', name: 'Salle du haut', buildingId: 'esir-41', iCalUrl: 'cal-esir41-salle-haut' },
-
+  { id: 'esir41-001', name: '001', buildingId: 'esir-41', iCalUrl: 'cal-esir41-001' },
+  { id: 'esir41-002', name: '002', buildingId: 'esir-41', iCalUrl: 'cal-esir41-002' },
+  { id: 'esir41-003', name: '003', buildingId: 'esir-41', iCalUrl: 'cal-esir41-003' },
+  { id: 'esir41-004', name: '004', buildingId: 'esir-41', iCalUrl: 'cal-esir41-004' },
+  { id: 'esir41-101', name: '101', buildingId: 'esir-41', iCalUrl: 'cal-esir41-101' },
+  { id: 'esir41-102', name: '102', buildingId: 'esir-41', iCalUrl: 'cal-esir41-102' },
+  { id: 'esir41-103', name: '103', buildingId: 'esir-41', iCalUrl: 'cal-esir41-103' },
+  { id: 'esir41-104', name: '104', buildingId: 'esir-41', iCalUrl: 'cal-esir41-104' },
+  
   // ESIR 42
-  { id: 'esir42-001', name: '001', buildingId: 'esir-42', iCalUrl: 'cal-esir42-001' },
-  { id: 'esir42-002', name: '002', buildingId: 'esir-42', iCalUrl: 'cal-esir42-002' },
-  { id: 'esir42-003', name: '003', buildingId: 'esir-42', iCalUrl: 'cal-esir42-003' },
-  { id: 'esir42-004', name: '004', buildingId: 'esir-42', iCalUrl: 'cal-esir42-004' },
-  { id: 'esir42-101', name: '101', buildingId: 'esir-42', iCalUrl: 'cal-esir42-101' },
-  { id: 'esir42-102', name: '102', buildingId: 'esir-42', iCalUrl: 'cal-esir42-102' },
-  { id: 'esir42-103', name: '103', buildingId: 'esir-42', iCalUrl: 'cal-esir42-103' },
-  { id: 'esir42-104', name: '104', buildingId: 'esir-42', iCalUrl: 'cal-esir42-104' },
+  { id: 'esir42-amphi-l', name: 'Amphi L', buildingId: 'esir-42', iCalUrl: 'cal-esir42-amphi-l' },
+  { id: 'esir42-amphi-m', name: 'Amphi M', buildingId: 'esir-42', iCalUrl: 'cal-esir42-amphi-m' },
+  { id: 'esir42-amphi-n', name: 'Amphi N', buildingId: 'esir-42', iCalUrl: 'cal-esir42-amphi-n' },
+  { id: 'esir42-salle-haut', name: 'Salle du haut', buildingId: 'esir-42', iCalUrl: 'cal-esir42-salle-haut' },
 ];
 
 const generateDayEvents = (baseDate: Date, eventSeeds: { hour: number; duration: number; summary: string }[]): CalendarEvent[] => {
@@ -45,40 +45,40 @@ const tomorrow = add(today, { days: 1 });
 const currentHour = new Date().getHours();
 
 const mockCalendarData: Record<string, CalendarEvent[]> = {
-  // ESIR 41
-  'cal-esir41-amphi-l': [
+  // ESIR 42
+  'cal-esir42-amphi-l': [
     ...generateDayEvents(today, [
       { hour: 9, duration: 120, summary: 'Cours Magistral' },
       { hour: 14, duration: 90, summary: 'Conférence A' },
     ]),
   ],
-  'cal-esir41-amphi-m': [
+  'cal-esir42-amphi-m': [
     { summary: 'Partiel', start: sub(new Date(), { minutes: 60 }).toISOString(), end: add(new Date(), { minutes: 120 }).toISOString() },
   ],
-  'cal-esir41-amphi-n': [],
-  'cal-esir41-salle-haut': [
+  'cal-esir42-amphi-n': [],
+  'cal-esir42-salle-haut': [
     ...generateDayEvents(tomorrow, [{ hour: 10, duration: 60, summary: 'Réunion Pédagogique' }]),
   ],
 
-  // ESIR 42
-  'cal-esir42-001': [
+  // ESIR 41
+  'cal-esir41-001': [
     ...generateDayEvents(today, [{ hour: currentHour, duration: 50, summary: 'TP Électronique' }]),
   ],
-  'cal-esir42-002': [],
-  'cal-esir42-003': [
+  'cal-esir41-002': [],
+  'cal-esir41-003': [
     { summary: 'Projet Info', start: sub(new Date(), { minutes: 30 }).toISOString(), end: add(new Date(), { hours: 2 }).toISOString() },
   ],
-  'cal-esir42-004': [
+  'cal-esir41-004': [
     ...generateDayEvents(today, [{ hour: 11, duration: 55, summary: 'Soutenance' }]),
   ],
-  'cal-esir42-101': [
+  'cal-esir41-101': [
     ...generateDayEvents(today, [{ hour: 10, duration: 50, summary: 'TD Maths' }, { hour: 16, duration: 50, summary: 'TD Physique' }]),
   ],
-  'cal-esir42-102': [],
-  'cal-esir42-103': [
+  'cal-esir41-102': [],
+  'cal-esir41-103': [
     { summary: 'Réservation', start: add(new Date(), { minutes: 15 }).toISOString(), end: add(new Date(), { minutes: 75 }).toISOString() },
   ],
-  'cal-esir42-104': [
+  'cal-esir41-104': [
     ...generateDayEvents(tomorrow, [{ hour: 9, duration: 180, summary: 'Examen' }]),
   ],
 };
