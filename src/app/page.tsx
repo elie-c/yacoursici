@@ -71,7 +71,7 @@ export default async function Home({
       </main>
       <footer className="w-full py-4 mt-8">
         <div className="container mx-auto text-center text-sm text-muted-foreground">
-          Fais en 30 minutes grâce à une IA tout en suivant un cours depuis le fond de la salle -{' '}
+          Fait en 30 minutes grâce à une IA, tout en suivant un cours depuis le fond de la salle -{' '}
           <a
             href="https://www.linkedin.com/in/elie-c/"
             target="_blank"
