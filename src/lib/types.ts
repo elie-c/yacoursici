@@ -7,7 +7,6 @@ export type Room = {
   id: string;
   name: string;
   buildingId: string;
-  iCalUrl: string;
 };
 
 export type CalendarEvent = {
