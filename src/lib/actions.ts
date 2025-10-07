@@ -1,10 +1,10 @@
 'use server';
 
-import { add, sub, set } from 'date-fns';
-import type { Building, Room, CalendarEvent, RoomStatusInfo, RoomWithStatus } from './types';
+import ICAL from 'ical.js';
+import type { Building, Room, RoomStatusInfo, RoomWithStatus } from './types';
 import { CALENDAR_URLS } from './config';
 
-// --- MOCK DATABASE & iCal SOURCE ---
+// --- MOCK DATABASE ---
 
 const buildings: Building[] = [
   { id: 'esir-42', name: 'ESIR - 42' },
@@ -29,62 +29,6 @@ const rooms: Room[] = [
   { id: 'esir41-104', name: '104', buildingId: 'esir-41' },
 ];
 
-const generateDayEvents = (baseDate: Date, eventSeeds: { hour: number; duration: number; summary: string }[]): CalendarEvent[] => {
-  return eventSeeds.map(seed => {
-    const startDate = set(baseDate, { hours: seed.hour, minutes: 0, seconds: 0, milliseconds: 0 });
-    const endDate = add(startDate, { minutes: seed.duration });
-    return {
-      summary: seed.summary,
-      start: startDate.toISOString(),
-      end: endDate.toISOString(),
-    };
-  });
-};
-
-const today = new Date();
-const tomorrow = add(today, { days: 1 });
-const currentHour = new Date().getHours();
-
-// NOTE: This is mock data. In a real app, you would fetch and parse iCal data.
-const mockCalendarData: Record<string, CalendarEvent[]> = {
-  // ESIR 42
-  [CALENDAR_URLS['esir42-amphi-l']]: [
-    ...generateDayEvents(today, [
-      { hour: 9, duration: 120, summary: 'Cours Magistral' },
-      { hour: 14, duration: 90, summary: 'Conférence A' },
-    ]),
-  ],
-  [CALENDAR_URLS['esir42-amphi-m']]: [
-    { summary: 'Partiel', start: sub(new Date(), { minutes: 60 }).toISOString(), end: add(new Date(), { minutes: 120 }).toISOString() },
-  ],
-  [CALENDAR_URLS['esir42-amphi-n']]: [],
-  [CALENDAR_URLS['esir42-salle-haut']]: [
-    ...generateDayEvents(tomorrow, [{ hour: 10, duration: 60, summary: 'Réunion Pédagogique' }]),
-  ],
-
-  // ESIR 41
-  [CALENDAR_URLS['esir41-001']]: [
-    ...generateDayEvents(today, [{ hour: currentHour, duration: 50, summary: 'TP Électronique' }]),
-  ],
-  [CALENDAR_URLS['esir41-002']]: [],
-  [CALENDAR_URLS['esir41-003']]: [
-    { summary: 'Projet Info', start: sub(new Date(), { minutes: 30 }).toISOString(), end: add(new Date(), { hours: 2 }).toISOString() },
-  ],
-  [CALENDAR_URLS['esir41-004']]: [
-    ...generateDayEvents(today, [{ hour: 11, duration: 55, summary: 'Soutenance' }]),
-  ],
-  [CALENDAR_URLS['esir41-101']]: [
-    ...generateDayEvents(today, [{ hour: 10, duration: 50, summary: 'TD Maths' }, { hour: 16, duration: 50, summary: 'TD Physique' }]),
-  ],
-  [CALENDAR_URLS['esir41-102']]: [],
-  [CALENDAR_URLS['esir41-103']]: [
-    { summary: 'Réservation', start: add(new Date(), { minutes: 15 }).toISOString(), end: add(new Date(), { minutes: 75 }).toISOString() },
-  ],
-  [CALENDAR_URLS['esir41-104']]: [
-    ...generateDayEvents(tomorrow, [{ hour: 9, duration: 180, summary: 'Examen' }]),
-  ],
-};
-
 
 export async function getBuildings(): Promise<Building[]> {
   await new Promise(resolve => setTimeout(resolve, 100));
@@ -96,60 +40,94 @@ export async function getRoomsByBuilding(buildingId: string): Promise<Room[]> {
   return rooms.filter(room => room.buildingId === buildingId);
 }
 
-// TODO: Replace this function with a real iCal parser
-async function getRoomStatusFromMock(iCalUrl: string): Promise<RoomStatusInfo> {
-  const events = (mockCalendarData[iCalUrl] || []).sort(
-    (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
-  );
 
-  const now = new Date();
+async function getRoomStatusFromICal(iCalUrl: string, roomName: string): Promise<RoomStatusInfo> {
+  try {
+    const response = await fetch(iCalUrl, {
+      next: { revalidate: 60 * 5 } // Revalidate every 5 minutes
+    });
 
-  const currentEvent = events.find(
-    event => new Date(event.start) <= now && new Date(event.end) > now
-  );
+    if (!response.ok) {
+      throw new Error(`Failed to fetch calendar: ${response.statusText}`);
+    }
 
-  if (currentEvent) {
+    const iCalData = await response.text();
+    const jcalData = ICAL.parse(iCalData);
+    const vcalendar = new ICAL.Component(jcalData);
+    const vevents = vcalendar.getAllSubcomponents('vevent');
+    const now = new ICAL.Time.now();
+
+    const relevantEvents = vevents.filter(vevent => {
+      const event = new ICAL.Event(vevent);
+      const location = event.location || '';
+      // Check if the room name is in the event's location field
+      return location.includes(roomName);
+    });
+
+    for (const vevent of relevantEvents) {
+      const event = new ICAL.Event(vevent);
+      if (event.isOverlapping(now)) {
+        return {
+          status: 'occupied',
+          nextChangeTime: event.endDate.toJSDate(),
+          currentEventName: event.summary,
+        };
+      }
+    }
+
+    // Find the next event
+    let nextEvent: ICAL.Event | null = null;
+    for (const vevent of relevantEvents) {
+        const event = new ICAL.Event(vevent);
+        if (event.startDate.compare(now) > 0) {
+            if (!nextEvent || event.startDate.compare(nextEvent.startDate) < 0) {
+                nextEvent = event;
+            }
+        }
+    }
+
     return {
-      status: 'occupied',
-      nextChangeTime: new Date(currentEvent.end),
-      currentEventName: currentEvent.summary,
+      status: 'free',
+      nextChangeTime: nextEvent ? nextEvent.startDate.toJSDate() : null,
+      currentEventName: null,
+    };
+
+  } catch (error) {
+    console.error(`Error processing calendar for URL ${iCalUrl}:`, error);
+    // Return a default "free" status in case of an error
+    return {
+      status: 'free',
+      nextChangeTime: null,
+      currentEventName: null,
     };
   }
-
-  const nextEvent = events.find(event => new Date(event.start) > now);
-
-  return {
-    status: 'free',
-    nextChangeTime: nextEvent ? new Date(nextEvent.start) : null,
-    currentEventName: null,
-  };
 }
 
 // This is the main function to get room status.
-// It currently uses mock data but is set up to fetch real data in the future.
-async function getRoomStatus(roomId: string): Promise<RoomStatusInfo> {
+async function getRoomStatus(room: Room): Promise<RoomStatusInfo> {
   // @ts-ignore
-  const iCalUrl = CALENDAR_URLS[roomId];
-
-  if (!iCalUrl) {
-    console.warn(`No calendar URL for room ${roomId}`);
+  const iCalUrl = CALENDAR_URLS[room.buildingId];
+  
+  // For ESIR 41, we still use mock data as no URL is provided
+  if (room.buildingId === 'esir-41' || !iCalUrl) {
+    console.warn(`No real calendar URL for room ${room.id}. Using mock status.`);
     return { status: 'free', nextChangeTime: null, currentEventName: null };
   }
   
-  // In a real application, you would fetch(iCalUrl) and parse the iCalendar data.
-  // For now, we use our mock data based on the URL.
-  return getRoomStatusFromMock(iCalUrl);
+  // Since we have one URL for the whole building, we need to filter by room name
+  return getRoomStatusFromICal(iCalUrl, room.name);
 }
 
 export async function getRoomsWithStatus(buildingId: string): Promise<RoomWithStatus[]> {
     const buildingRooms = await getRoomsByBuilding(buildingId);
     if (buildingRooms.length === 0) return [];
     
-    await new Promise(resolve => setTimeout(resolve, 400));
+    // Using a longer delay to account for network requests
+    await new Promise(resolve => setTimeout(resolve, 800));
     
     const roomsWithStatus = await Promise.all(
         buildingRooms.map(async (room) => {
-            const statusInfo = await getRoomStatus(room.id);
+            const statusInfo = await getRoomStatus(room);
             return { ...room, ...statusInfo };
         })
     );
