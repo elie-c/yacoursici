@@ -7,26 +7,26 @@ import { CALENDAR_URLS } from './config';
 // --- MOCK DATABASE ---
 
 const buildings: Building[] = [
-  { id: 'esir-42', name: 'ESIR - 42' },
   { id: 'esir-41', name: 'ESIR - 41' },
+  { id: 'esir-42', name: 'ESIR - 42' },
 ];
 
 const rooms: Room[] = [
-  // ESIR 42
-  { id: 'esir42-amphi-l', name: 'Amphi L', buildingId: 'esir-42' },
-  { id: 'esir42-amphi-m', name: 'Amphi M', buildingId: 'esir-42' },
-  { id: 'esir42-amphi-n', name: 'Amphi N', buildingId: 'esir-42' },
-  { id: 'esir42-salle-haut', name: 'Salle du haut', buildingId: 'esir-42' },
-
   // ESIR 41
-  { id: 'esir41-001', name: '001', buildingId: 'esir-41' },
-  { id: 'esir41-002', name: '002', buildingId: 'esir-41' },
-  { id: 'esir41-003', name: '003', buildingId: 'esir-41' },
-  { id: 'esir41-004', name: '004', buildingId: 'esir-41' },
-  { id: 'esir41-101', name: '101', buildingId: 'esir-41' },
-  { id: 'esir41-102', name: '102', buildingId: 'esir-41' },
-  { id: 'esir41-103', name: '103', buildingId: 'esir-41' },
-  { id: 'esir41-104', name: '104', buildingId: 'esir-41' },
+  { id: 'esir41-amphi-l', name: 'Amphi L', buildingId: 'esir-41' },
+  { id: 'esir41-amphi-m', name: 'Amphi M', buildingId: 'esir-41' },
+  { id: 'esir41-amphi-n', name: 'Amphi N', buildingId: 'esir-41' },
+  { id: 'esir41-salle-haut', name: 'Salle du haut', buildingId: 'esir-41' },
+  
+  // ESIR 42
+  { id: 'esir42-001', name: '001', buildingId: 'esir-42' },
+  { id: 'esir42-002', name: '002', buildingId: 'esir-42' },
+  { id: 'esir42-003', name: '003', buildingId: 'esir-42' },
+  { id: 'esir42-004', name: '004', buildingId: 'esir-42' },
+  { id: 'esir42-101', name: '101', buildingId: 'esir-42' },
+  { id: 'esir42-102', name: '102', buildingId: 'esir-42' },
+  { id: 'esir42-103', name: '103', buildingId: 'esir-42' },
+  { id: 'esir42-104', name: '104', buildingId: 'esir-42' },
 ];
 
 
@@ -107,12 +107,10 @@ async function getRoomStatusFromICal(iCalUrl: string, roomName: string): Promise
 
 // This is the main function to get room status.
 async function getRoomStatus(room: Room): Promise<RoomStatusInfo> {
-  // @ts-ignore
   const iCalUrl = CALENDAR_URLS[room.buildingId];
   
-  // For ESIR 41, we still use mock data as no URL is provided
-  if (room.buildingId === 'esir-41' || !iCalUrl) {
-    console.warn(`No real calendar URL for room ${room.id}. Using mock status.`);
+  if (!iCalUrl) {
+    console.warn(`No calendar URL for building ${room.buildingId}. Using mock status.`);
     return { status: 'free', nextChangeTime: null, currentEventName: null };
   }
   
