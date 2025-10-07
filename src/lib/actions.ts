@@ -66,7 +66,9 @@ async function getRoomStatusFromICal(iCalUrl: string, roomName: string): Promise
 
     for (const vevent of relevantEvents) {
       const event = new ICAL.Event(vevent);
-      if (event.isOverlapping(now)) {
+      const isHappeningNow = event.startDate.compare(now) <= 0 && event.endDate.compare(now) > 0;
+
+      if (isHappeningNow) {
         return {
           status: 'occupied',
           nextChangeTime: event.endDate.toJSDate(),
