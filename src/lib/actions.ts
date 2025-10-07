@@ -55,7 +55,7 @@ async function getRoomStatusFromICal(iCalUrl: string, roomName: string): Promise
     const jcalData = ICAL.parse(iCalData);
     const vcalendar = new ICAL.Component(jcalData);
     const vevents = vcalendar.getAllSubcomponents('vevent');
-    const now = new ICAL.Time.now();
+    const now = ICAL.Time.now();
 
     const relevantEvents = vevents.filter(vevent => {
       const event = new ICAL.Event(vevent);
