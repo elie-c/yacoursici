@@ -6,29 +6,26 @@ import type { Building, Room, CalendarEvent, RoomStatusInfo, RoomWithStatus } fr
 // --- MOCK DATABASE & iCal SOURCE ---
 
 const buildings: Building[] = [
-  { id: 'eng', name: 'Engineering & Tech Building' },
-  { id: 'sci', name: 'Science Hall' },
-  { id: 'lib', name: 'Main Library' },
+  { id: 'esir-41', name: 'ESIR - 41' },
+  { id: 'esir-42', name: 'ESIR - 42' },
 ];
 
 const rooms: Room[] = [
-  // Engineering
-  { id: 'eng-101', name: 'Innovate Lab', buildingId: 'eng', iCalUrl: 'cal-eng-101' },
-  { id: 'eng-205', name: 'Project Room A', buildingId: 'eng', iCalUrl: 'cal-eng-205' },
-  { id: 'eng-310', name: 'Seminar Room', buildingId: 'eng', iCalUrl: 'cal-eng-310' },
+  // ESIR 41
+  { id: 'esir41-amphi-l', name: 'Amphi L', buildingId: 'esir-41', iCalUrl: 'cal-esir41-amphi-l' },
+  { id: 'esir41-amphi-m', name: 'Amphi M', buildingId: 'esir-41', iCalUrl: 'cal-esir41-amphi-m' },
+  { id: 'esir41-amphi-n', name: 'Amphi N', buildingId: 'esir-41', iCalUrl: 'cal-esir41-amphi-n' },
+  { id: 'esir41-salle-haut', name: 'Salle du haut', buildingId: 'esir-41', iCalUrl: 'cal-esir41-salle-haut' },
 
-  // Science
-  { id: 'sci-b1', name: 'Bio Lab', buildingId: 'sci', iCalUrl: 'cal-sci-b1' },
-  { id: 'sci-112', name: 'Chem Study', buildingId: 'sci', iCalUrl: 'cal-sci-112' },
-  { id: 'sci-220', name: 'Physics Collab', buildingId: 'sci', iCalUrl: 'cal-sci-220' },
-  { id: 'sci-300', name: 'Quiet Study', buildingId: 'sci', iCalUrl: 'cal-sci-300' },
-
-  // Library
-  { id: 'lib-1a', name: 'Group Study 1A', buildingId: 'lib', iCalUrl: 'cal-lib-1a' },
-  { id: 'lib-1b', name: 'Group Study 1B', buildingId: 'lib', iCalUrl: 'cal-lib-1b' },
-  { id: 'lib-2c', name: 'Media Room 2C', buildingId: 'lib', iCalUrl: 'cal-lib-2c' },
-  { id: 'lib-3d', name: 'Silent Zone 3D', buildingId: 'lib', iCalUrl: 'cal-lib-3d' },
-  { id: 'lib-4e', name: 'Presentation Practice', buildingId: 'lib', iCalUrl: 'cal-lib-4e' },
+  // ESIR 42
+  { id: 'esir42-001', name: '001', buildingId: 'esir-42', iCalUrl: 'cal-esir42-001' },
+  { id: 'esir42-002', name: '002', buildingId: 'esir-42', iCalUrl: 'cal-esir42-002' },
+  { id: 'esir42-003', name: '003', buildingId: 'esir-42', iCalUrl: 'cal-esir42-003' },
+  { id: 'esir42-004', name: '004', buildingId: 'esir-42', iCalUrl: 'cal-esir42-004' },
+  { id: 'esir42-101', name: '101', buildingId: 'esir-42', iCalUrl: 'cal-esir42-101' },
+  { id: 'esir42-102', name: '102', buildingId: 'esir-42', iCalUrl: 'cal-esir42-102' },
+  { id: 'esir42-103', name: '103', buildingId: 'esir-42', iCalUrl: 'cal-esir42-103' },
+  { id: 'esir42-104', name: '104', buildingId: 'esir-42', iCalUrl: 'cal-esir42-104' },
 ];
 
 const generateDayEvents = (baseDate: Date, eventSeeds: { hour: number; duration: number; summary: string }[]): CalendarEvent[] => {
@@ -48,47 +45,41 @@ const tomorrow = add(today, { days: 1 });
 const currentHour = new Date().getHours();
 
 const mockCalendarData: Record<string, CalendarEvent[]> = {
-  'cal-eng-101': [ // Innovate Lab - Busy today
+  // ESIR 41
+  'cal-esir41-amphi-l': [
     ...generateDayEvents(today, [
-      { hour: 9, duration: 90, summary: 'Senior Design Project' },
-      { hour: 11, duration: 50, summary: 'Robotics Club Meeting' },
-      { hour: 14, duration: 120, summary: 'AI Workshop' },
+      { hour: 9, duration: 120, summary: 'Cours Magistral' },
+      { hour: 14, duration: 90, summary: 'Conférence A' },
     ]),
   ],
-  'cal-eng-205': [ // Project Room A - One meeting now, one later
-    ...generateDayEvents(today, [
-      { hour: currentHour, duration: 60, summary: 'Group Sync' },
-      { hour: currentHour + 3, duration: 45, summary: 'Code Review' },
-    ]),
+  'cal-esir41-amphi-m': [
+    { summary: 'Partiel', start: sub(new Date(), { minutes: 60 }).toISOString(), end: add(new Date(), { minutes: 120 }).toISOString() },
   ],
-  'cal-eng-310': [ // Seminar Room - Free all day
-  ...generateDayEvents(tomorrow, [
-      { hour: 10, duration: 180, summary: 'Guest Lecture' },
-    ]),
+  'cal-esir41-amphi-n': [],
+  'cal-esir41-salle-haut': [
+    ...generateDayEvents(tomorrow, [{ hour: 10, duration: 60, summary: 'Réunion Pédagogique' }]),
   ],
-  'cal-sci-b1': [ // Bio Lab - Free for a short while
-    { summary: 'Cell Culture Prep', start: sub(new Date(), { minutes: 10 }).toISOString(), end: add(new Date(), { minutes: 50 }).toISOString() },
-    { summary: 'Microscopy Session', start: add(new Date(), { hours: 2 }).toISOString(), end: add(new Date(), { hours: 4 }).toISOString() },
+
+  // ESIR 42
+  'cal-esir42-001': [
+    ...generateDayEvents(today, [{ hour: currentHour, duration: 50, summary: 'TP Électronique' }]),
   ],
-  'cal-sci-112': [ // Chem Study - Occupied for a while
-    { summary: 'Organic Chem Study Group', start: sub(new Date(), { hours: 1 }).toISOString(), end: add(new Date(), { hours: 1, minutes: 30 }).toISOString() },
+  'cal-esir42-002': [],
+  'cal-esir42-003': [
+    { summary: 'Projet Info', start: sub(new Date(), { minutes: 30 }).toISOString(), end: add(new Date(), { hours: 2 }).toISOString() },
   ],
-  'cal-sci-220': [ // Physics Collab - Free for rest of day
-    ...generateDayEvents(today, [ { hour: 8, duration: 120, summary: 'Quantum Mechanics Review' } ]),
+  'cal-esir42-004': [
+    ...generateDayEvents(today, [{ hour: 11, duration: 55, summary: 'Soutenance' }]),
   ],
-   'cal-sci-300': [], // Quiet Study - always free
-  'cal-lib-1a': [ // Group Study 1A
-    ...generateDayEvents(today, [ { hour: 10, duration: 50, summary: 'History Project' }, { hour: 13, duration: 50, summary: 'Econ P-Set' } ]),
+  'cal-esir42-101': [
+    ...generateDayEvents(today, [{ hour: 10, duration: 50, summary: 'TD Maths' }, { hour: 16, duration: 50, summary: 'TD Physique' }]),
   ],
-  'cal-lib-1b': [ // Group Study 1B - back-to-back
-    ...generateDayEvents(today, [ { hour: 15, duration: 60, summary: 'Debate Prep' }, { hour: 16, duration: 60, summary: 'Presentation Run-through' } ]),
+  'cal-esir42-102': [],
+  'cal-esir42-103': [
+    { summary: 'Réservation', start: add(new Date(), { minutes: 15 }).toISOString(), end: add(new Date(), { minutes: 75 }).toISOString() },
   ],
-  'cal-lib-2c': [ // Media Room 2C - has a booking now
-     { summary: 'Podcast Recording', start: sub(new Date(), { minutes: 30 }).toISOString(), end: add(new Date(), { minutes: 60 }).toISOString() },
-  ],
-  'cal-lib-3d': [], // Silent Zone 3D - always free
-  'cal-lib-4e': [ // Presentation Practice - free for 30 mins
-    { summary: 'Upcoming Booking', start: add(new Date(), { minutes: 30 }).toISOString(), end: add(new Date(), { minutes: 90 }).toISOString() },
+  'cal-esir42-104': [
+    ...generateDayEvents(tomorrow, [{ hour: 9, duration: 180, summary: 'Examen' }]),
   ],
 };
 
