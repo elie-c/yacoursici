@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { Building } from '@/lib/types';
+import { useLoading } from '@/components/ui/loading-context';
 
 type BuildingSelectorProps = {
   buildings: Building[];
@@ -19,13 +20,15 @@ export function BuildingSelector({ buildings, selectedBuildingId }: BuildingSele
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { setLoading } = useLoading();
 
   const handleValueChange = (buildingId: string) => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
     current.set('building', buildingId);
     const search = current.toString();
     const query = search ? `?${search}` : '';
-    router.push(`${pathname}${query}`);
+    setLoading(true)
+    router.push(`${pathname}${query}`)
   };
 
   return (
@@ -40,6 +43,7 @@ export function BuildingSelector({ buildings, selectedBuildingId }: BuildingSele
           </SelectItem>
         ))}
       </SelectContent>
+      {/* Overlay handled by AppShell */}
     </Select>
   );
 }

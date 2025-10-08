@@ -39,14 +39,15 @@ async function RoomData({ buildingId, buildings }: { buildingId: string, buildin
 }
 
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
+export default async function Home(
+  props: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const buildings = await getBuildings();
-  const selectedBuildingId =
-    typeof searchParams.building === 'string' && buildings.some(b => b.id === searchParams.building)
+  const selectedBuildingId: string =
+    typeof searchParams.building === 'string' && buildings.some((b) => b.id === searchParams.building)
       ? searchParams.building
       : buildings[0]?.id || '';
 
