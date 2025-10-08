@@ -17,7 +17,7 @@ function TimeRemaining({ nextChangeTime, status }: { nextChangeTime: Date | null
   useEffect(() => {
     const calculateRemaining = () => {
       if (!nextChangeTime) {
-        setTime('indéfiniment');
+        setTime('pour la journée');
         return;
       }
       

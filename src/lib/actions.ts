@@ -55,11 +55,31 @@ async function getRoomStatusFromICal(iCalUrl: string, roomName: string): Promise
     const vevents = vcalendar.getAllSubcomponents('vevent');
     const now = ICAL.Time.now();
 
+    // Restrict to events for this room that occur today (overlap with today's interval)
+    const nowDate = new Date();
+    const startOfDay = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 0, 0, 0, 0);
+    const endOfDay = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate(), 23, 59, 59, 999);
+
     const relevantEvents = vevents.filter(vevent => {
       const event = new ICAL.Event(vevent);
       const location = event.location || '';
-      return location.includes(roomName);
+      if (!location.includes(roomName)) return false;
+
+      const evStart = event.startDate.toJSDate();
+      const evEnd = event.endDate.toJSDate();
+
+      // check overlap with today's interval
+      return evEnd >= startOfDay && evStart <= endOfDay;
     });
+
+    // If there are no events for this room today, consider it free for the whole day
+    if (!relevantEvents || relevantEvents.length === 0) {
+      return {
+        status: 'free',
+        nextChangeTime: endOfDay,
+        currentEventName: null,
+      };
+    }
 
     for (const vevent of relevantEvents) {
       const event = new ICAL.Event(vevent);
